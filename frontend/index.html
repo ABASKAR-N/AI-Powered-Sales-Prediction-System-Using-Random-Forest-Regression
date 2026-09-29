@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sales AI | Prediction Dashboard</title>
+
+    <link rel="stylesheet" href="index.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="index.js" defer></script>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">S</div>
+            <div>
+                <h2>SalesAI</h2>
+                <p>Intelligence Platform</p>
+            </div>
+        </div>
+
+        <div class="nav-title">WORKSPACE</div>
+
+        <a href="#" class="nav-link active">
+            <span>▦</span> Dashboard
+        </a>
+
+        <a href="#prediction" class="nav-link">
+            <span>◈</span> Sales Prediction
+        </a>
+
+        <a href="#history" class="nav-link">
+            <span>▤</span> Prediction History
+        </a>
+
+        <div class="sidebar-bottom">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                <div>
+                    <strong>ML System</strong>
+                    <p id="sidebarStatus">Checking backend...</p>
+                </div>
+            </div>
+            <p class="version">SALES AI • VERSION 1.0</p>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">Workspace / Dashboard</p>
+                <h1>Sales Dashboard</h1>
+                <p class="subtitle">
+                    Predict sales using your trained Random Forest model.
+                </p>
+            </div>
+
+            <div class="top-actions">
+                <div class="live-badge">
+                    <span class="status-dot"></span>
+                    <span id="backendStatus">Checking API</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SUMMARY CARDS -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span>Total Predictions</span>
+                    <span class="stat-icon purple">↗</span>
+                </div>
+                <h2 id="totalPredictions">0</h2>
+                <p>Predictions this session</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span>Latest Predicted Sales</span>
+                    <span class="stat-icon green">$</span>
+                </div>
+                <h2 id="latestSales">—</h2>
+                <p>Most recent model output</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span>Average Predicted Sales</span>
+                    <span class="stat-icon blue">◉</span>
+                </div>
+                <h2 id="averageSales">—</h2>
+                <p>Average of session predictions</p>
+            </div>
+
+        </section>
+
+        <!-- PREDICTION FORM -->
+        <section class="content-grid" id="prediction">
+
+            <div class="panel prediction-panel">
+
+                <div class="panel-heading">
+                    <div>
+                        <h2>Sales Prediction</h2>
+                        <p>Enter the business details below.</p>
+                    </div>
+                    <span class="model-tag">RANDOM FOREST</span>
+                </div>
+
+                <form id="predictionForm">
+
+                    <div class="field">
+                        <label for="budget">Advertising Budget</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">₹</span>
+                            <input
+                                type="number"
+                                id="budget"
+                                placeholder="Enter advertising budget"
+                                min="0"
+                                step="any"
+                                required
+                            >
+                        </div>
+                        <small>Marketing expenditure</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="storeSize">Store Size</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">▦</span>
+                            <input
+                                type="number"
+                                id="storeSize"
+                                placeholder="Enter store size"
+                                min="0"
+                                step="any"
+                                required
+                            >
+                        </div>
+                        <small>Store size in the same units as your dataset</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="discount">Discount Percentage</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">%</span>
+                            <input
+                                type="number"
+                                id="discount"
+                                placeholder="Enter discount percentage"
+                                min="0"
+                                max="100"
+                                step="any"
+                                required
+                            >
+                        </div>
+                        <small>Discount offered to customers (0–100%)</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="predictBtn" class="primary-btn">
+                            <span>✦</span>
+                            Predict Sales
+                        </button>
+
+                        <button type="reset" class="reset-btn">
+                            Reset
+                        </button>
+                    </div>
+
+                    <p id="errorMessage" class="error-message"></p>
+
+                </form>
+
+            </div>
+
+            <!-- RESULT PANEL -->
+            <div class="panel result-panel">
+
+                <div class="panel-heading">
+                    <div>
+                        <h2>Prediction Result</h2>
+                        <p>Output from your trained ML model.</p>
+                    </div>
+                    <span class="result-icon">✦</span>
+                </div>
+
+                <div class="result-content" id="emptyResult">
+                    <div class="empty-icon">↗</div>
+                    <h3>Ready to predict</h3>
+                    <p>
+                        Enter your business data and click Predict Sales
+                        to see the estimated sales value.
+                    </p>
+                </div>
+
+                <div class="result-content hidden" id="predictionResult">
+
+                    <p class="result-label">ESTIMATED TOTAL SALES</p>
+
+                    <h2 class="result-value" id="resultValue">₹0</h2>
+
+                    <div class="success-badge">
+                        <span>✓</span>
+                        Prediction completed
+                    </div>
+
+                    <div class="result-divider"></div>
+
+                    <div class="result-detail">
+                        <span>Advertising Budget</span>
+                        <strong id="resultBudget">—</strong>
+                    </div>
+
+                    <div class="result-detail">
+                        <span>Store Size</span>
+                        <strong id="resultStore">—</strong>
+                    </div>
+
+                    <div class="result-detail">
+                        <span>Discount</span>
+                        <strong id="resultDiscount">—</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- CHART -->
+        <section class="panel chart-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <h2>Prediction Analytics</h2>
+                    <p>Compare predicted sales across this session.</p>
+                </div>
+                <span class="chart-tag">LIVE SESSION</span>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+
+        </section>
+
+        <!-- HISTORY -->
+        <section class="panel history-panel" id="history">
+
+            <div class="panel-heading">
+                <div>
+                    <h2>Prediction History</h2>
+                    <p>Your recent predictions in this browser session.</p>
+                </div>
+
+                <button id="clearHistory" class="reset-btn">
+                    Clear History
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Advertising Budget</th>
+                            <th>Store Size</th>
+                            <th>Discount</th>
+                            <th>Predicted Sales</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="historyBody">
+                        <tr>
+                            <td colspan="5" class="empty-table">
+                                No predictions yet. Make your first prediction.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+        </section>
+
+        <footer>
+            <span>SalesAI Prediction Dashboard</span>
+            <span>Powered by FastAPI & Random Forest ML</span>
+        </footer>
+
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Prediction Engine</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; margin: 40px; }
+        .container { max-width: 450px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 0 auto; }
+        h2 { text-align: center; color: #333; margin-bottom: 25px; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: #555; }
+        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; background: #007bff; color: white; border: none; padding: 12px; margin-top: 25px; border-radius: 4px; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #0056b3; }
+        .result-box { margin-top: 25px; padding: 15px; background: #e9f7ef; border-left: 5px solid #28a745; border-radius: 4px; display: none; text-align: center; }
+        #output { font-size: 20px; font-weight: bold; color: #1e7e34; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📈 Sales Predictor</h2>
+    
+    <label for="budget">Advertising Budget ($):</label>
+    <input type="number" id="budget" value="5000">
+
+    <label for="size">Store Size (Sq Ft):</label>
+    <input type="number" id="size" value="1500">
+
+    <label for="discount">Discount Percentage (%):</label>
+    <input type="number" id="discount" value="10">
+
+    <button onclick="getPrediction()">Predict Future Sales</button>
+
+    <div class="result-box" id="resultBox">
+        <p>Estimated Total Sales:</p>
+        <div id="output">$0.00</div>
+    </div>
+</div>
+
+<script>
+    async function getPrediction() {
+        // 1. Get input values from user text boxes
+        const budget = parseFloat(document.getElementById('budget').value);
+        const size = parseFloat(document.getElementById('size').value);
+        const discount = parseFloat(document.getElementById('discount').value);
+
+        // 2. Prepare payload structure exactly matching backend Pydantic model
+        const payload = {
+            Advertising_Budget: budget,
+            Store_Size: size,
+            Discount_Percentage: discount
+        };
+
+        try {
+            // 3. Send HTTP POST request directly to local FastAPI server
+            const response = await fetch('http://127.0.0', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            // 4. Update the UI layout to visually show the calculation result
+            document.getElementById('output').innerText = '$' + data.estimated_sales.toLocaleString();
+            document.getElementById('resultBox').style.display = 'block';
+        } catch (error) {
+            alert('Error connecting to backend server. Make sure your FastAPI app is running via Uvicorn!');
+            console.error(error);
+        }
+    }
+</script>
+
+</body>
+</html>
