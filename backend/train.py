@@ -1,4 +1,6 @@
 
+from pathlib import Path
+
 import pandas as pd
 import joblib
 
@@ -6,8 +8,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATASET_PATH = PROJECT_ROOT / "sales_data.csv"
+MODEL_PATH = Path(__file__).resolve().parent / "sales_model.pkl"
+
 # Load dataset
-df = pd.read_csv("sales_data.csv")
+df = pd.read_csv(DATASET_PATH)
 
 # Remove missing values
 df = df.dropna()
@@ -49,6 +55,6 @@ print("MAE:", mean_absolute_error(y_test, y_pred))
 print("R2 Score:", r2_score(y_test, y_pred))
 
 # Save trained model
-joblib.dump(model, "sales_model.pkl")
+joblib.dump(model, MODEL_PATH)
 
-print("Model saved as sales_model.pkl")
+print(f"Model saved as {MODEL_PATH}")

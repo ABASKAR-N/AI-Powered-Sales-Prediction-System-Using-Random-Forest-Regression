@@ -4,6 +4,7 @@ import pandas as pd
 import joblib
 import traceback
 import os
+import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 # Create FastAPI application
 app = FastAPI(
@@ -30,8 +31,18 @@ MODEL_PATH = os.path.join(
     "sales_model.pkl"
 )
 
+FALLBACK_MODEL_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "sales_model.pkl"
+)
+
 try:
-    model = joblib.load(MODEL_PATH)
+    if os.path.exists(MODEL_PATH):
+        model = joblib.load(MODEL_PATH)
+    elif os.path.exists(FALLBACK_MODEL_PATH):
+        model = joblib.load(FALLBACK_MODEL_PATH)
+    else:
+        raise FileNotFoundError("Model file not found. Train the model before starting the API.")
     print("Model loaded successfully!")
 
 except Exception as e:
@@ -114,3 +125,7 @@ def predict_sales(data: SalesData):
             status_code=500,
             detail=str(e)
         )
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
