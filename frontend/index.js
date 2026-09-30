@@ -6,7 +6,10 @@
 
 // 1. BACKEND CONFIGURATION
 
-const API_URL = "http://127.0.0.1:8000";
+// Use relative URLs for production deployment
+const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+  ? "http://127.0.0.1:8000" 
+  : "";
 
 // Dashboard data
 let predictionHistory = [];
